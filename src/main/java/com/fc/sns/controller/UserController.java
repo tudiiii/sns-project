@@ -7,7 +7,6 @@ import com.fc.sns.controller.response.UserJoinResponse;
 import com.fc.sns.controller.response.UserLoginResponse;
 import com.fc.sns.model.User;
 import com.fc.sns.service.UserService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

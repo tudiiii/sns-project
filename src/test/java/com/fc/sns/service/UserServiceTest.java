@@ -24,6 +24,7 @@ public class UserServiceTest {
     @Autowired private UserService userService;
 
     @MockBean private UserEntityRepository userEntityRepository;
+
     @MockBean private BCryptPasswordEncoder encoder;
 
     @Test
@@ -85,14 +86,14 @@ public class UserServiceTest {
     void 로그인시_패스워드가_틀린_경우() {
         String userName = "userName";
         String password = "password";
-        String wrongPassword = "password";
+        String wrongPassword = "password2";
 
         UserEntity fixture = UserEntityFixture.get(userName, password);
 
         // mocking
         when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
 
-        SnsApplicationException e = Assertions.assertThrows(SnsApplicationException.class, () -> userService.login(userName,password));
+        SnsApplicationException e = Assertions.assertThrows(SnsApplicationException.class, () -> userService.login(userName,wrongPassword));
         Assertions.assertEquals(ErrorCode.INVALID_PASSWORD, e.getErrorCode());
     }
 }
