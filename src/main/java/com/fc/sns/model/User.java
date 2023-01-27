@@ -24,7 +24,6 @@ public class User implements UserDetails {
     private Timestamp updatedAt;
     private Timestamp deletedAt;
 
-
     // entity -> dto
     public static User fromEntity(UserEntity entity) {
         return new User(
