@@ -4,6 +4,7 @@ import com.fc.sns.exception.ErrorCode;
 import com.fc.sns.exception.SnsApplicationException;
 import com.fc.sns.fixture.PostEntityFixture;
 import com.fc.sns.fixture.UserEntityFixture;
+import com.fc.sns.model.User;
 import com.fc.sns.model.entity.PostEntity;
 import com.fc.sns.model.entity.UserEntity;
 import com.fc.sns.repository.PostEntityRepository;
@@ -13,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -159,6 +162,25 @@ public class PostServiceTest {
 
         SnsApplicationException e = Assertions.assertThrows(SnsApplicationException.class, () -> postService.delete(userName, 1) );
         Assertions.assertEquals(ErrorCode.INVALID_PERMISSION, e.getErrorCode());
+    }
+
+    @Test
+    void 피드목록_요청이_성공한_경우(){
+        Pageable pageable = mock(Pageable.class);
+        when(postEntityRepository.findAll(pageable)).thenReturn(Page.empty());
+
+        Assertions.assertDoesNotThrow(() -> postService.list(pageable));
+    }
+
+    @Test
+    void 내피드목록_요청이_성공한_경우(){
+        Pageable pageable = mock(Pageable.class);
+        UserEntity user = mock(UserEntity.class);
+
+        when(userEntityRepository.findByUserName(any())).thenReturn(Optional.of(user));
+        when(postEntityRepository.findAllByUser(user, pageable)).thenReturn(Page.empty());
+
+        Assertions.assertDoesNotThrow(() -> postService.my("", pageable));
     }
 
 }
