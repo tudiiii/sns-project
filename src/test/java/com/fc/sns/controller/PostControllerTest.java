@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -45,9 +46,6 @@ public class PostControllerTest {
         String title = "title";
         String body = "body";
 
-        when(postService.modify(eq(title), eq(body), any(), any()))
-                .thenReturn(Post.fromEntity(PostEntityFixture.get("userName", 1, 1)));
-
         mockMvc.perform(post("/api/v1/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(new PostCreateRequest(title, body)))
@@ -73,6 +71,10 @@ public class PostControllerTest {
     void 포스트_수정() throws Exception {
         String title = "title";
         String body = "body";
+
+        when(postService.modify(eq(title), eq(body), any(), any()))
+                .thenReturn(Post.fromEntity(PostEntityFixture.get("userName", 1, 1)));
+
 
         mockMvc.perform(put("/api/v1/posts/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -149,9 +151,9 @@ public class PostControllerTest {
     @WithMockUser
     void 포스트_삭제시_작성자와_삭제요청자가_다를_경우() throws Exception {
 
-        doThrow(new SnsApplicationException(ErrorCode.INVALID_PERMISSION)).when(postService).delete(any(), any());
+        doThrow(new SnsApplicationException(ErrorCode.INVALID_PERMISSION)).when(postService).delete(any(), eq(1));
 
-        mockMvc.perform(put("/api/v1/posts/1")
+        mockMvc.perform(delete("/api/v1/posts/1")
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print())
                 .andExpect(status().isUnauthorized());
@@ -161,7 +163,7 @@ public class PostControllerTest {
     @WithMockUser
     void 포스트_삭제시_삭제하려는_포스타가_존재하지_않을_경우() throws Exception {
 
-        doThrow(new SnsApplicationException(ErrorCode.POST_NOT_FOUND)).when(postService).delete(any(), any());
+        doThrow(new SnsApplicationException(ErrorCode.POST_NOT_FOUND)).when(postService).delete(any(), eq(1));
 
         mockMvc.perform(delete("/api/v1/posts/1")
                         .contentType(MediaType.APPLICATION_JSON)
