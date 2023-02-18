@@ -1,6 +1,8 @@
 package com.fc.sns.controller;
 
+import com.fc.sns.controller.request.PostCommentRequest;
 import com.fc.sns.controller.request.PostCreateRequest;
+import com.fc.sns.controller.response.PostCommentResponse;
 import com.fc.sns.controller.response.PostResponse;
 import com.fc.sns.controller.response.Response;
 import com.fc.sns.model.Post;
@@ -57,4 +59,17 @@ public class PostController {
     public Response<Integer> likeCount(@PathVariable Integer postId, Authentication authentication) {
         return Response.success(postService.likeCount(postId));
     }
+
+    @PostMapping("/{postId}/comments")
+    public Response<Void> comment(@PathVariable Integer postId, @RequestBody PostCommentRequest request, Authentication authentication) {
+        postService.comment(postId, authentication.getName(), request.getComment());
+        return Response.success();
+    }
+
+    @GetMapping("/{postId}/comments")
+    public Response<Page<PostCommentResponse>> comment(@PathVariable Integer postId, Pageable pageable) {
+        return Response.success(postService.getComments(postId, pageable).map(PostCommentResponse::fromComment));
+    }
+
 }
+
