@@ -12,7 +12,10 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"like\"")
+@Table(name = "\"like\"", indexes = {
+        @Index(name = "post_id_idx", columnList = "post_id"),
+        @Index(name = "user_id_idx", columnList = "user_id")
+})
 @SQLDelete(sql = "UPDATE \"like\" SET deleted_at = NOW() where id=?")
 @Where(clause = "deleted_at is NULL")
 public class LikeEntity {
